@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    /* ESM & Node.js Compatibility */
+    "target": "ES2022", // Modern target for Node.js
+    "module": "NodeNext", // The best module setting for modern Node.js ESM projects
+    "moduleResolution": "NodeNext", // Works hand-in-hand with "module": "NodeNext"
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Strictness & Quality */
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    /* Project Structure & Output */
+    // 'tsup' handles the output, so 'outDir' is not strictly needed by the build script,
+    // but it's good practice to keep for tools like the 'typecheck' script.
+    "outDir": "./dist",
+
+    /* Path Aliases */
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  // This tells all tools (IDE, tsx, eslint, tsc --noEmit)
+  // what files are part of your TypeScript project.
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "knexfile.ts", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}
