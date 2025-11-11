@@ -1,11 +1,10 @@
 import { FastifyInstance } from 'fastify';
 
-import { ConversationController } from '@/infrastructure/http/controllers/conversation.controller.js';
+import { container } from '@/infrastructure/config/container.js';
 
-export function registerConversationRoutes(
-  fastify: FastifyInstance,
-  controller: ConversationController,
-) {
+export default async function (fastify: FastifyInstance) {
+  const conversationController = container.conversationController;
+
   fastify.post('/conversations', {
     schema: {
       tags: ['Conversation'],
@@ -35,16 +34,19 @@ export function registerConversationRoutes(
                 type: 'object',
                 properties: {
                   content: { type: 'string' },
-                  type: { type: 'string' },
+                  role: { type: 'string' },
+                  isToolCall: { type: 'boolean' },
                 },
               },
               description: 'Array of messages in the conversation',
             },
           },
         },
+        404: { type: 'object', properties: { message: { type: 'string' } } },
+        500: { type: 'object', properties: { message: { type: 'string' } } },
       },
     },
-    handler: controller.startConversation.bind(controller),
+    handler: conversationController.startConversation.bind(conversationController),
   });
 
   fastify.post('/conversations/:conversationId/messages', {
@@ -84,8 +86,10 @@ export function registerConversationRoutes(
             },
           },
         },
+        404: { type: 'object', properties: { message: { type: 'string' } } },
+        500: { type: 'object', properties: { message: { type: 'string' } } },
       },
     },
-    handler: controller.sendMessage.bind(controller),
+    handler: conversationController.sendMessage.bind(conversationController),
   });
 }

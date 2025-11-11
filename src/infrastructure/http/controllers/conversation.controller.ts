@@ -5,24 +5,15 @@ import { StartConversationUseCase } from '@/application/usecases/conversations/s
 import { Message } from '@/domain/services/conversational-agent.service.js';
 
 type StartConversationBodyDto = {
-  body: {
-    agentProfileId: string;
-    initialMessageContent: string;
-  };
+  agentProfileId: string;
+  initialMessageContent: string;
 };
-
-type SendMessageParamsDto = {
-  params: {
-    conversationId: string;
-  };
+type ConversationParamsDto = {
+  conversationId: string;
 };
-
 type SendMessageBodyDto = {
-  body: {
-    messageContent: string;
-  };
+  messageContent: string;
 };
-
 type ConversationResponseDto = {
   conversationId: string;
   messages: Message[];
@@ -35,37 +26,18 @@ export class ConversationController {
   ) {}
 
   async startConversation(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const {
-        body: { agentProfileId, initialMessageContent },
-      } = request as StartConversationBodyDto;
-
-      const { conversationId, messages } = await this.startConversationUseCase.execute(
-        agentProfileId,
-        initialMessageContent,
-      );
-
-      reply.status(201).send({ conversationId, messages } as ConversationResponseDto);
-    } catch (error: unknown) {
-      reply.status(400).send({ message: (error as Error).message });
-    }
+    const { agentProfileId, initialMessageContent } = request.body as StartConversationBodyDto;
+    const { conversationId, messages } = await this.startConversationUseCase.execute(
+      agentProfileId,
+      initialMessageContent,
+    );
+    reply.status(201).send({ conversationId, messages } as ConversationResponseDto);
   }
 
   async sendMessage(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const {
-        params: { conversationId },
-      } = request as SendMessageParamsDto;
-
-      const {
-        body: { messageContent },
-      } = request as SendMessageBodyDto;
-
-      const { messages } = await this.sendMessageUseCase.execute(conversationId, messageContent);
-
-      reply.status(200).send({ conversationId, messages } as ConversationResponseDto);
-    } catch (error: unknown) {
-      reply.status(400).send({ message: (error as Error).message });
-    }
+    const { conversationId } = request.params as ConversationParamsDto;
+    const { messageContent } = request.body as SendMessageBodyDto;
+    const { messages } = await this.sendMessageUseCase.execute(conversationId, messageContent);
+    reply.status(200).send({ conversationId, messages } as ConversationResponseDto);
   }
 }
