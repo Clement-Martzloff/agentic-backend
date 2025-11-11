@@ -1,7 +1,7 @@
 import { AgentProfileEntity } from '@/domain/entities/agent-profile.entity.js';
 
 export type InsertAgentProfileDto = Omit<AgentProfileEntity, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateAgentProfileDto = Omit<AgentProfileEntity, 'createdAt'>;
+export type UpdateAgentProfileDto = Partial<Omit<AgentProfileEntity, 'createdAt'>>;
 
 export interface AgentProfileRepository {
   selectOne(id: string): Promise<AgentProfileEntity | null>;
