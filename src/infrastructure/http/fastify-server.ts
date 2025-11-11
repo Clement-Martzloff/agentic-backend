@@ -2,12 +2,29 @@ import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import Fastify from 'fastify';
 
-import { container } from '@/infrastructure/config/container.js';
-import { registerConversationRoutes } from '@/infrastructure/http/routes/conversation.route.js';
+import agentProfileRoutes from '@/infrastructure/http/routes/agent-profile.route.js';
+import conversationRoutes from '@/infrastructure/http/routes/conversation.route.js';
 
 export async function buildServer() {
   const fastify = Fastify({
     logger: true,
+  });
+
+  fastify.setErrorHandler((error, request, reply) => {
+    /**
+     * Intercepted errors:
+     * - Any error thrown in routes, controllers, use cases, or repositories
+     * - Promise rejections in async handlers or hooks
+     */
+
+    request.log.error({ err: error }, 'Error intercepted during request lifecycle');
+
+    const statusCode = (error as { statusCode?: number }).statusCode || 500;
+
+    reply.status(statusCode).send({
+      success: false,
+      message: statusCode < 500 ? (error as Error).message : 'Internal Server Error',
+    });
   });
 
   await fastify.register(swagger, {
@@ -21,7 +38,10 @@ export async function buildServer() {
       schemes: ['http'],
       consumes: ['application/json'],
       produces: ['application/json'],
-      tags: [{ name: 'Conversation', description: 'Conversation related endpoints' }],
+      tags: [
+        { name: 'Agent Profile', description: 'Agent Profile related endpoints' },
+        { name: 'Conversation', description: 'Conversation related endpoints' },
+      ],
     },
   });
 
@@ -48,7 +68,8 @@ export async function buildServer() {
     // customCss: '.swagger-ui .opblock-control-box { display: none; }',
   });
 
-  registerConversationRoutes(fastify, container.conversationController);
+  fastify.register(agentProfileRoutes);
+  fastify.register(conversationRoutes);
 
   return fastify;
 }
