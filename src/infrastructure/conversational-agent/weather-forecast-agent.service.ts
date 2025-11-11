@@ -45,18 +45,12 @@ export class WeatherForecastAgentService implements ConversationnalAgentService 
       configurable: { thread_id: conversationId },
     };
 
-    try {
-      const response = await reactAgent.invoke(
-        { messages: [new HumanMessage({ content: messageContent })] },
-        config,
-      );
-      console.log('Agent response:', response);
+    const response = await reactAgent.invoke(
+      { messages: [new HumanMessage({ content: messageContent })] },
+      config,
+    );
 
-      return response.messages.map(this.mapMessage);
-    } catch (error) {
-      console.error('Error occurred while getting response:', error);
-      throw error;
-    }
+    return response.messages.map(this.mapMessage);
   }
 
   private async getModel() {
