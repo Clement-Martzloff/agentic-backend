@@ -7,10 +7,10 @@ export async function seed(knex: Knex): Promise<void> {
   const weatherAgentProfileName = AGENT_PROFILE_NAMES.WEATHER_FORECAST;
   const weatherToolName = TOOL_NAMES.GET_CURRENT_WEATHER;
 
-  const existingAgent = await knex('agent_profiles')
+  const existingAgentProfile = await knex('agent_profiles')
     .where({ name: weatherAgentProfileName })
     .first();
-  if (existingAgent) {
+  if (existingAgentProfile) {
     console.log(`Agent profile "${weatherAgentProfileName}" already exists. Skipping seed.`);
     return;
   }
@@ -34,9 +34,7 @@ export async function seed(knex: Knex): Promise<void> {
       })
       .returning('*');
 
-    console.log(
-      `-> Created agent profile profile: "${agentProfile.name}" (ID: ${agentProfile.id})`,
-    );
+    console.log(`-> Created agent profile: "${agentProfile.name}" (ID: ${agentProfile.id})`);
 
     await knex('agent_profiles_tools').insert({
       agent_profile_id: agentProfile.id,
