@@ -1,5 +1,6 @@
 export const AGENT_PROFILE_NAMES = {
   WEATHER_FORECAST: 'weather-forecast',
+  CODE_GENERATOR: 'code-generator', // For test purposes
   // Add other agents here in the future
   // CUSTOMER_SUPPORT: 'customer-support',
 } as const;

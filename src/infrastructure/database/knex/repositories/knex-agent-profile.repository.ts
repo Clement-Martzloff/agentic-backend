@@ -40,7 +40,7 @@ export class KnexAgentProfileRepository implements AgentProfileRepository {
         this.knex.raw(
           `jsonb_agg(
             jsonb_build_object('id', t.id, 'name', t.name)
-           ) FILTER (WHERE t.id IS NOT NULL) as tools`,
+          ) FILTER (WHERE t.id IS NOT NULL) as tools`,
         ),
       )
       .leftJoin('agent_profiles_tools as apt', 'ap.id', 'apt.agent_profile_id')
@@ -66,7 +66,7 @@ export class KnexAgentProfileRepository implements AgentProfileRepository {
         this.knex.raw(
           `jsonb_agg(
             jsonb_build_object('id', t.id, 'name', t.name)
-           ) FILTER (WHERE t.id IS NOT NULL) as tools`,
+          ) FILTER (WHERE t.id IS NOT NULL) as tools`,
         ),
       )
       .leftJoin('agent_profiles_tools as apt', 'ap.id', 'apt.agent_profile_id')
