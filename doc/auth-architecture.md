@@ -11,7 +11,7 @@ Adding authentication, authorization, and multi-tenancy introduces **identity**,
 
 ## 2. Objectives
 
-- ✅ Provide **user authentication** (using placeholders now, real provider later — e.g. Clerk).
+- ✅ Provide **user authentication** (e.g. Clerk).
 - ✅ Support **multi-tenancy**: organizations own agents, tools, and conversations.
 - ✅ Implement **authorization (RBAC)** to restrict actions based on role and organization.
 - ✅ Maintain clean **ports/adapters separation** with no vendor lock-in.
@@ -51,8 +51,8 @@ These decisions must be made **before implementing migrations or policies**.
 
 ### Infrastructure Layer
 
-- **`AuthService`** (placeholder):
-  - Validates token (stubbed for now, later via Clerk SDK).
+- **`AuthService`**:
+  - Validates token.
   - Returns `AuthUser` → `{ id, email, orgId, roles }`.
 
 - **`authorize()` Middleware**:
