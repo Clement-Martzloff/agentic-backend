@@ -4,18 +4,17 @@
 
 Our application currently lacks a systematic way to validate incoming data from client requests. This means that malformed or malicious data could easily make its way into our application layer and even our domain model, causing unexpected errors or security vulnerabilities.
 
-For example, in our `agent-profile.controller.ts`, the `body` is typed as `any`, and its properties are accessed without any validation.
+For example, in our `agent-profile.controller.ts`, the properties of the `body` are accessed without any validation.
 
 ```typescript
 // src/infrastructure/http/controllers/agent-profile.controller.ts (Current)
 // ...
-  async create(req: FastifyRequest, reply: FastifyReply) {
-    const { name, description, tools } = req.body as any; // Unsafe "as any"
+  async createAgentProfile(request: FastifyRequest, reply: FastifyReply) {
+    const { name, toolIds } = request.body as CreateAgentProfileBodyDto; // Unsafe type casting
     // What if 'name' is missing, not a string, or empty?
-    // What if 'tools' is not an array of strings?
-    const useCase = container.resolve<CreateAgentProfileUseCase>('createAgentProfileUseCase');
-    const agentProfile = await useCase.execute({ name, description, tools });
-    reply.status(201).send(agentProfile);
+    // What if 'toolIds' is not an array of strings?
+    const agentProfileId = await this.createAgentProfileUseCase.execute(name, toolIds);
+    return reply.status(201).send(agentProfileId as string);
   }
 // ...
 ```
@@ -37,9 +36,8 @@ We can define a Zod schema for creating an agent profile.
 import { z } from 'zod';
 
 export const createAgentProfileSchema = z.object({
-  name: z.string().min(1, { message: "Name cannot be empty" }),
-  description: z.string().optional(),
-  tools: z.array(z.string().uuid({ message: "Each tool ID must be a valid UUID" })).optional(),
+  name: z.string().min(1, { message: 'Name cannot be empty' }),
+  toolIds: z.array(z.string().uuid({ message: 'Each tool ID must be a valid UUID' })).optional(),
 });
 
 // Type inference from the schema
@@ -57,16 +55,15 @@ Alternatively, for simplicity, we can perform the validation inside the controll
 import { createAgentProfileSchema, CreateAgentProfileDto } from '../schemas/agent-profile.schema';
 
 // ...
-  async create(req: FastifyRequest, reply: FastifyReply) {
+  async createAgentProfile(request: FastifyRequest, reply: FastifyReply) {
     try {
       // 1. Validate the request body
-      const { name, description, tools }: CreateAgentProfileDto = createAgentProfileSchema.parse(req.body);
+      const { name, toolIds }: CreateAgentProfileDto = createAgentProfileSchema.parse(request.body);
 
       // 2. Call the use case with validated data
-      const useCase = container.resolve<CreateAgentProfileUseCase>('createAgentProfileUseCase');
-      const agentProfile = await useCase.execute({ name, description, tools });
+    const agentProfileId = await this.createAgentProfileUseCase.execute(name, toolIds);
 
-      reply.status(201).send(agentProfile);
+    return reply.status(201).send(agentProfileId as string);
     } catch (error) {
       if (error instanceof z.ZodError) {
         // 400 Bad Request if validation fails
