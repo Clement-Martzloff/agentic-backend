@@ -53,7 +53,7 @@ see: [`.env.template`](./.env.template) for more details on each variable.
 
 ## Building and Running
 
-The project is containerized and managed via Docker Compose for the PostgreSQL database.
+The PostgreSQL database is containerized and managed via Docker Compose. The Node.js application runs directly using npm scripts.
 
 ### Local Development
 
@@ -80,6 +80,16 @@ To stop the PostgreSQL service:
 ```bash
 docker-compose down
 ```
+
+## API Documentation
+
+Once the application is running, the API documentation, powered by Swagger UI, can be accessed at:
+
+```
+http://localhost:3000/doc
+```
+
+This interface allows you to explore available endpoints, understand request/response schemas, and test API calls directly from your browser.
 
 ## Useful Database Queries
 
