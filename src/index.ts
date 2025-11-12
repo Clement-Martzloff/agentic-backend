@@ -10,7 +10,7 @@ async function main() {
   try {
     await server.listen({ port, host: '0.0.0.0' });
     console.log(`Server listening on http://localhost:${port}`);
-    console.log(`Swagger UI available at http://localhost:${port}/documentation`);
+    console.log(`Swagger UI available at http://localhost:${port}/doc`);
   } catch (err) {
     server.log.error(err);
     process.exit(1);
